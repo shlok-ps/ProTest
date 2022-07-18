@@ -1,0 +1,57 @@
+import { StyleSheet, Text, View, Button } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import FilePickerManager from 'react-native-file-picker';
+import RNFS from 'react-native-fs';
+import RNFetchBlob from 'rn-fetch-blob';
+
+
+const Home = () => {
+    const [Doc, setDoc] = useState('')
+    const [BaseFormat, setBaseFormat] = useState('')
+    console.log("BaseFormat", BaseFormat)
+
+    RNFetchBlob.fs
+        .readFile(Doc.path, 'base64')
+        .then((data) => {
+            setBaseFormat(data)
+            // console.log("Data", data)
+        })
+        .catch((err) => { });
+
+
+    return (
+        <View style={{ flex: 1 }}>
+            <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>Select File</Text>
+                <Button
+                    title="Document/File"
+                    onPress={() => {
+                        FilePickerManager.showFilePicker(null, (response) => {
+                            console.log('Response = ', response);
+                            if (response.didCancel) {
+                                console.log('User cancelled file picker');
+                            }
+                            else if (response.error) {
+                                console.log('FilePickerManager Error: ', response.error);
+                            }
+                            else {
+                                setDoc(response);
+                            }
+                        });
+                    }
+                    }
+                />
+            </View>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>File Name : {Doc.fileName} </Text>
+                <Text>File Path : {Doc.path} </Text>
+                <Text>File Size : {Doc.readableSize} </Text>
+                <Button title='Clear All' onPress={() => { setDoc('') }} />
+            </View>
+        </View>
+    )
+}
+
+export default Home
+
+const styles = StyleSheet.create({})
